@@ -1,6 +1,29 @@
-# POption
-Bot project incomplete
-# Advanced Trading Bot System 🤖
+# POption Signal Analyzer
+
+AI-powered binary options signal analyzer for Pocket Option charts using Claude Vision.
+
+## Signal Analyzer Features
+
+- **Screenshot Analysis** — Upload any chart screenshot via drag & drop
+- **Timeframe Signals** — Optimized analysis for 2m, 5m, and 10m expiry
+- **6 Indicator Breakdown**: Candlestick Patterns, MACD (12,26,9), EMA 8/15/35, Stochastic (14,3,3), ZigZag, Vortex (14)
+- **Confluence Score** — Counts how many indicators agree on direction
+- **Risk Assessment** — LOW / MEDIUM / HIGH per trade
+- **Entry Recommendation** — ENTER NOW / WAIT / SKIP
+
+## Quick Start (Signal Analyzer)
+
+```bash
+pip install -r requirements.txt
+python main.py
+# Open http://localhost:8000 in your browser
+```
+
+Get your Anthropic API Key at [console.anthropic.com](https://console.anthropic.com).
+
+---
+
+# Advanced Trading Bot System
 
 ## Overview
 A sophisticated trading bot system that integrates with Pocket Option through Telegram, offering advanced trading capabilities with machine learning-powered analysis and comprehensive risk management. The system is split into two main components: a Telegram bot interface and a trading engine.
