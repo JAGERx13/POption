@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POption Signal Analyzer</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <span class="logo-icon">&#9685;</span>
+          <span class="logo-text">POption <span class="logo-accent">Signal</span></span>
+        </div>
+        <div class="header-subtitle">Binary Options AI Analyzer</div>
+      </div>
+      <div class="header-right">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Ready</span>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="main">
+
+      <!-- Left Panel: Controls -->
+      <section class="panel panel-left">
+
+        <!-- API Key -->
+        <div class="card">
+          <div class="card-title">
+            <span class="card-icon">&#128273;</span> API Configuration
+          </div>
+          <div class="form-group">
+            <label class="label" for="apiKey">Anthropic API Key</label>
+            <div class="input-wrapper">
+              <input
+                type="password"
+                id="apiKey"
+                class="input"
+                placeholder="sk-ant-api..."
+                autocomplete="off"
+              />
+              <button class="toggle-visibility" id="toggleKey" title="Show/Hide">&#128065;</button>
+            </div>
+            <p class="hint">
+              Get your key at <strong>console.anthropic.com</strong>. Stored only in memory, never sent to our servers.
+            </p>
+          </div>
+        </div>
+
+        <!-- Timeframe -->
+        <div class="card">
+          <div class="card-title">
+            <span class="card-icon">&#8987;</span> Timeframe / Expiry
+          </div>
+          <div class="timeframe-buttons">
+            <button class="tf-btn active" data-tf="2m">
+              <span class="tf-value">2</span>
+              <span class="tf-unit">MIN</span>
+            </button>
+            <button class="tf-btn" data-tf="5m">
+              <span class="tf-value">5</span>
+              <span class="tf-unit">MIN</span>
+            </button>
+            <button class="tf-btn" data-tf="10m">
+              <span class="tf-value">10</span>
+              <span class="tf-unit">MIN</span>
+            </button>
+          </div>
+          <p class="hint">Select your trade expiry before uploading the screenshot.</p>
+        </div>
+
+        <!-- Upload -->
+        <div class="card">
+          <div class="card-title">
+            <span class="card-icon">&#128247;</span> Chart Screenshot
+          </div>
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" hidden />
+            <div class="drop-content" id="dropContent">
+              <div class="drop-icon">&#128444;</div>
+              <div class="drop-text">Drop screenshot here</div>
+              <div class="drop-sub">or click to browse</div>
+              <div class="drop-formats">PNG &bull; JPG &bull; WebP</div>
+            </div>
+            <div class="preview-container" id="previewContainer" style="display:none">
+              <img id="previewImg" class="preview-img" alt="Chart preview" />
+              <button class="remove-img" id="removeImg">&#10005;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analyze Button -->
+        <button class="analyze-btn" id="analyzeBtn" disabled>
+          <span id="btnText">&#9650; ANALYZE CHART</span>
+          <div class="btn-spinner" id="btnSpinner" style="display:none"></div>
+        </button>
+
+      </section>
+
+      <!-- Right Panel: Results -->
+      <section class="panel panel-right" id="resultPanel">
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">&#128202;</div>
+          <div class="empty-title">No Analysis Yet</div>
+          <div class="empty-sub">Upload a Pocket Option chart screenshot and click Analyze to get your signal.</div>
+        </div>
+
+        <!-- Results (hidden until analysis) -->
+        <div id="resultContent" style="display:none">
+
+          <!-- Main Signal -->
+          <div class="signal-card" id="signalCard">
+            <div class="signal-badge" id="signalBadge">
+              <span class="signal-direction" id="signalDirection">--</span>
+              <span class="signal-arrow" id="signalArrow"></span>
+            </div>
+            <div class="signal-meta">
+              <div class="confidence-block">
+                <div class="confidence-label">Confidence</div>
+                <div class="confidence-value" id="confidenceValue">--%</div>
+                <div class="confidence-bar-bg">
+                  <div class="confidence-bar-fill" id="confidenceFill"></div>
+                </div>
+              </div>
+              <div class="entry-block">
+                <div class="entry-label">Entry</div>
+                <div class="entry-value" id="entryValue">--</div>
+              </div>
+              <div class="tf-block">
+                <div class="tf-label">Timeframe</div>
+                <div class="tf-selected" id="tfSelected">--</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="card">
+            <div class="card-title">
+              <span class="card-icon">&#128211;</span> Analysis Summary
+            </div>
+            <p class="summary-text" id="summaryText"></p>
+          </div>
+
+          <!-- Confluence Score -->
+          <div class="card">
+            <div class="card-title">
+              <span class="card-icon">&#9889;</span> Indicator Confluence
+            </div>
+            <div class="confluence-grid">
+              <div class="conf-item conf-bull">
+                <div class="conf-count" id="confBull">0</div>
+                <div class="conf-label">Bullish</div>
+              </div>
+              <div class="conf-item conf-bear">
+                <div class="conf-count" id="confBear">0</div>
+                <div class="conf-label">Bearish</div>
+              </div>
+              <div class="conf-item conf-neut">
+                <div class="conf-count" id="confNeut">0</div>
+                <div class="conf-label">Neutral</div>
+              </div>
+            </div>
+            <div class="confluence-bar-wrap">
+              <div class="conf-bar-bull" id="confBarBull"></div>
+              <div class="conf-bar-bear" id="confBarBear"></div>
+              <div class="conf-bar-neut" id="confBarNeut"></div>
+            </div>
+          </div>
+
+          <!-- Indicators Grid -->
+          <div class="card">
+            <div class="card-title">
+              <span class="card-icon">&#128200;</span> Indicator Breakdown
+            </div>
+            <div class="indicators-grid" id="indicatorsGrid"></div>
+          </div>
+
+          <!-- Risk & Entry -->
+          <div class="two-col">
+
+            <div class="card">
+              <div class="card-title">
+                <span class="card-icon">&#9888;</span> Risk Assessment
+              </div>
+              <div class="risk-level" id="riskLevel"></div>
+              <p class="risk-notes" id="riskNotes"></p>
+            </div>
+
+            <div class="card">
+              <div class="card-title">
+                <span class="card-icon">&#127919;</span> Entry Details
+              </div>
+              <div class="entry-detail" id="optimalEntry"></div>
+              <p class="key-levels" id="keyLevels"></p>
+            </div>
+
+          </div>
+
+          <!-- Footer -->
+          <div class="analysis-footer" id="analysisFooter"></div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Error Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
